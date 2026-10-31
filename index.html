@@ -33,7 +33,7 @@
     .pin-key:active{transform:scale(.95);}
     .pin-key.del{background:#fff5f5;color:#e53e3e;}
     .pin-error{color:#e53e3e;font-size:.82rem;min-height:20px;margin-top:4px;}
-    .user-bar{background:#2c5282;color:#fff;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-size:.82rem;}
+    .user-bar{background:#2c5282;color:#fff;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-size:.82rem;flex-wrap:wrap;gap:6px;}
     .logout-btn{padding:4px 12px;background:rgba(255,255,255,.2);border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.78rem;}
     .logout-btn:hover{background:rgba(255,255,255,.35);}
     .sync-status{text-align:center;padding:5px;font-size:.75rem;background:#f0fff4;color:#276749;border-bottom:1px solid #c6f6d5;}
@@ -47,8 +47,6 @@
     .btn-blue{background:#2b6cb0;}.btn-blue:hover{background:#2c5282;}
     .btn-gray{background:#718096;}.btn-gray:hover{background:#4a5568;}
     .btn-green{background:#38a169;}.btn-green:hover{background:#276749;}
-    .pin-change-wrap{display:flex;align-items:center;gap:6px;}
-    .pin-change-wrap input{width:80px;padding:5px 8px;border:1px solid #cbd5e0;border-radius:6px;font-size:.85rem;}
     .nav{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;background:#fff;flex-wrap:wrap;}
     .nav button{padding:6px 14px;background:#e2e8f0;border:none;border-radius:6px;cursor:pointer;font-size:1rem;}
     .nav button:hover{background:#cbd5e0;}
@@ -154,6 +152,8 @@
     .day-type-btn.selected-off{border-color:#718096;background:#f0f0f0;color:#4a5568;}
     .day-type-btn.selected-special{border-color:#d69e2e;background:#fffde7;color:#744210;}
     .day-type-btn.selected-normal{border-color:#2b6cb0;background:#ebf8ff;color:#2b6cb0;}
+    .week-copy-btn{width:100%;padding:10px;border:2px dashed #dd6b20;background:#fffaf0;border-radius:8px;cursor:pointer;font-size:.85rem;color:#dd6b20;font-weight:600;margin-bottom:14px;transition:all .15s;}
+    .week-copy-btn:hover{background:#feebc8;border-color:#c05621;}
     .shift-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;padding:8px 10px;border-radius:8px;background:#f7fafc;border:1px solid #e2e8f0;flex-wrap:wrap;}
     .shift-row.is-am{background:#dbeafe;border-color:#93c5fd;}
     .shift-row.is-pm{background:#dcfce7;border-color:#86efac;}
@@ -250,14 +250,14 @@
     <div class="pin-error" id="pinError"></div>
   </div>
 </div>
-
 <header>
   <h1 id="headerTitle">📅 내근무달력</h1>
   <p>🔘 휴무 · ⭐ 특근 · ✅ 정상근무 | 실시간 동기화</p>
 </header>
 <div class="user-bar" id="userBar">
   <span id="userBarText">🔐 로그인 중...</span>
-  <div style="display:flex;gap:8px;align-items:center;">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <button class="logout-btn" onclick="openNameChange()">👤 이름변경</button>
     <button class="logout-btn" onclick="openPinChange()">🔑 PIN변경</button>
     <button class="logout-btn" onclick="openStats()">📊 통계</button>
     <button class="logout-btn" onclick="logout()">🔒 로그아웃</button>
@@ -265,12 +265,10 @@
 </div>
 <div class="sync-status" id="syncStatus">🔄 연결 중...</div>
 <div class="holiday-status" id="holidayStatus">🔄 공휴일 정보 로딩 중...</div>
-
 <div class="controls">
   <button class="btn btn-green" onclick="openStats()">📊 통계</button>
   <button class="btn btn-gray" onclick="window.print()">🖨️ 인쇄</button>
 </div>
-
 <div class="nav">
   <button onclick="prevMonth()">◀</button>
   <select id="yearSel" onchange="onNavChange()"></select>
@@ -301,7 +299,6 @@
   <div class="legend-item"><div class="legend-box" style="background:#d1fae5;border-color:#6ee7b7;"></div>출산휴가</div>
   <div class="legend-item">📌 메모</div>
 </div>
-
 <div class="memo-modal-overlay" id="memoModalOverlay">
   <div class="memo-modal">
     <div class="memo-modal-header">
@@ -314,7 +311,6 @@
     </div>
   </div>
 </div>
-
 <div class="shift-popup-overlay" id="shiftPopupOverlay">
   <div class="shift-popup">
     <div class="shift-popup-header">
@@ -325,7 +321,6 @@
     <button class="shift-popup-edit-btn" onclick="goToEdit()">✏️ 수정하기</button>
   </div>
 </div>
-
 <div class="stats-overlay" id="statsOverlay">
   <div class="stats-modal">
     <h3>📊 근무 통계
@@ -337,13 +332,13 @@
     </div>
   </div>
 </div>
-
 <!-- PIN 변경 모달 -->
 <div class="modal-overlay" id="pinChangeOverlay">
   <div class="modal" style="width:320px;">
     <h3>🔑 PIN 변경</h3>
-    <div class="pin-change-wrap" style="justify-content:center;margin-bottom:16px;">
-      <input type="password" id="newPinInput" maxlength="4" placeholder="새 PIN(4자리)">
+    <div style="display:flex;justify-content:center;margin-bottom:16px;">
+      <input type="password" id="newPinInput" maxlength="4" placeholder="새 PIN(4자리)"
+        style="padding:8px;border:1px solid #cbd5e0;border-radius:6px;font-size:.95rem;text-align:center;width:160px;">
     </div>
     <div class="modal-btns">
       <button class="cancel-btn" onclick="closePinChange()">취소</button>
@@ -351,10 +346,27 @@
     </div>
   </div>
 </div>
-
+<!-- 이름 변경 모달 -->
+<div class="modal-overlay" id="nameChangeOverlay">
+  <div class="modal" style="width:320px;">
+    <h3>👤 이름 변경</h3>
+    <div style="margin-bottom:16px;">
+      <input type="text" id="newNameInput" maxlength="10" placeholder="이름 입력"
+        style="width:100%;padding:10px;border:1px solid #cbd5e0;border-radius:8px;font-size:1rem;text-align:center;">
+    </div>
+    <div class="modal-btns">
+      <button class="cancel-btn" onclick="closeNameChange()">취소</button>
+      <button class="ok-btn" onclick="saveName()">변경</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h3 id="modalTitle">근무 편집</h3>
+    <button class="week-copy-btn" id="weekCopyBtn" onclick="applyWeekCopy()">
+      📋 이 날 기준으로 해당 주 평일 전체 적용
+      <div style="font-size:.75rem;font-weight:400;margin-top:2px;">(토/일/공휴일 제외, 정상근무만 적용)</div>
+    </button>
     <div class="day-type-row">
       <button class="day-type-btn" id="btnOff" onclick="selectDayType('off')">🔘<br>휴무<br><span style="font-size:.72rem;font-weight:400;">쉬는 날</span></button>
       <button class="day-type-btn" id="btnSpecial" onclick="selectDayType('special')">⭐<br>특근<br><span style="font-size:.72rem;font-weight:400;">선택적 근무</span></button>
@@ -381,7 +393,6 @@
     </div>
   </div>
 </div>
-
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyApW8x8Ah0yxXEdaqykKF_Fn2yUAMoETrs",
@@ -396,7 +407,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let MY_PIN = '1234';
+let MY_NAME = '사용자';
 const PIN_REF = 'myPin';
+const NAME_REF = 'myName';
 const DATA_PATH = 'myScheduleData';
 
 let pinValue = '';
@@ -481,6 +494,25 @@ function savePin(){
   alert('✅ PIN이 변경되었습니다!');
 }
 
+/* ===== 이름 변경 ===== */
+function openNameChange(){
+  document.getElementById('newNameInput').value = MY_NAME==='사용자' ? '' : MY_NAME;
+  document.getElementById('nameChangeOverlay').classList.add('open');
+}
+function closeNameChange(){
+  document.getElementById('nameChangeOverlay').classList.remove('open');
+}
+function saveName(){
+  const val = document.getElementById('newNameInput').value.trim();
+  if(!val){ alert('이름을 입력해주세요!'); return; }
+  MY_NAME = val;
+  db.ref(NAME_REF).set(val);
+  document.getElementById('userBarText').textContent = `👤 ${MY_NAME} 근무달력`;
+  document.getElementById('headerTitle').textContent = `📅 ${MY_NAME} 근무달력`;
+  closeNameChange();
+  alert('✅ 이름이 변경되었습니다!');
+}
+
 /* ===== 공휴일 ===== */
 let holidayCache = {};
 const HOLIDAY_FALLBACK = {
@@ -529,7 +561,6 @@ function getHoliday(key){
 
 /* ===== Firebase 초기화/동기화 ===== */
 function initFirebase(){
-  document.getElementById('userBarText').textContent = '👤 내 근무달력';
   const syncEl = document.getElementById('syncStatus');
   db.ref('.info/connected').on('value', snap=>{
     syncEl.textContent = snap.val() ? '🟢 실시간 동기화 연결됨' : '🔴 오프라인';
@@ -537,6 +568,14 @@ function initFirebase(){
   });
   db.ref(PIN_REF).once('value').then(snap=>{
     if(snap.val()) MY_PIN = snap.val();
+  });
+  db.ref(NAME_REF).once('value').then(snap=>{
+    MY_NAME = snap.val() || '사용자';
+    document.getElementById('userBarText').textContent = `👤 ${MY_NAME} 근무달력`;
+    document.getElementById('headerTitle').textContent = `📅 ${MY_NAME} 근무달력`;
+    if(!snap.val()){
+      setTimeout(()=>{ openNameChange(); }, 300);
+    }
   });
   db.ref(DATA_PATH).on('value', snap=>{
     const data = snap.val() || {};
@@ -828,6 +867,7 @@ function selectDayType(type){
   document.getElementById('btnSpecial').className = 'day-type-btn'+(type==='special'?' selected-special':'');
   document.getElementById('btnNormal').className = 'day-type-btn'+(type==='normal'?' selected-normal':'');
   document.getElementById('editSection').classList.toggle('show', type!=='off');
+  document.getElementById('weekCopyBtn').style.display = type==='off' ? 'none' : 'block';
 }
 
 function openModal(key,date){
@@ -953,6 +993,49 @@ function saveDay(){
   closeModal(); saveToFirebase();
 }
 function resetDay(){ delete overrides[modalKey]; closeModal(); saveToFirebase(); }
+
+/* ===== 주차 복사 (평일만, 토/일/공휴일 제외) ===== */
+async function applyWeekCopy(){
+  if(!modalKey || !modalDate) return;
+  const srcData = collectModalData();
+  const dow = modalDate.getDay();
+  const monday = new Date(modalDate);
+  monday.setDate(modalDate.getDate() + (dow===0 ? -6 : 1-dow));
+
+  const targets = [];
+  for(let i=0;i<5;i++){
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    const key = toKey(d);
+    if(key===modalKey) continue;
+    if(isHolidayDate(d)) continue;
+    targets.push({date:d, key});
+  }
+  if(targets.length===0){ alert('적용할 수 있는 평일이 없습니다!'); return; }
+
+  const hasData = targets.filter(t=>overrides[t.key]);
+  const noData = targets.filter(t=>!overrides[t.key]);
+
+  const applyOne = (t)=>{
+    overrides[t.key] = JSON.parse(JSON.stringify(srcData));
+  };
+
+  if(hasData.length>0){
+    const dateList = hasData.map(t=>`${t.date.getMonth()+1}월 ${t.date.getDate()}일`).join(', ');
+    const msg = `이미 데이터가 있는 날짜:\n${dateList}\n\n덮어쓰시겠습니까?\n\n[확인] 모두 덮어쓰기\n[취소] 건너뛰기`;
+    const overwrite = confirm(msg);
+    if(overwrite){
+      targets.forEach(applyOne);
+    } else {
+      noData.forEach(applyOne);
+      if(noData.length===0){ alert('건너뛸 날짜만 있어서 적용된 날짜가 없습니다.'); return; }
+    }
+  } else {
+    targets.forEach(applyOne);
+  }
+
+  closeModal(); saveToFirebase();
+  alert('✅ 주차 근무가 적용되었습니다!');
+}
 
 /* ===== 통계 ===== */
 function openStats(){
